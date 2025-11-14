@@ -317,4 +317,37 @@ public class UserController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
+
+    /**
+     * 用户签到
+     *
+     * @param request
+     * @return 用户签到是否成功
+     */
+    @PostMapping("/add/sign_in")
+    public BaseResponse<Boolean> addUserSignIn(HttpServletRequest request) {
+        //用户必须先登录才能签到
+        User loginUser = userService.getLoginUser(request);
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.PARAMS_ERROR, "用户未登录");
+        boolean result = userService.addUserSignIn(loginUser.getId());
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 获取用户某年的签到记录
+     *
+     * @param request
+     * @param year
+     * @return 某用户一年的签到记录
+     */
+
+    @GetMapping("get/sign_in")
+    public BaseResponse<List<Integer>> getUserSignIn(HttpServletRequest request, Integer year) {
+        //用户必须先登录才能签到
+        User loginUser = userService.getLoginUser(request);
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.PARAMS_ERROR, "用户未登录");
+        List<Integer> map = userService.getUserSignInRecord(loginUser.getId(), year);
+        return ResultUtils.success(map);
+    }
 }

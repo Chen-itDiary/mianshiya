@@ -1,6 +1,6 @@
 package com.xiaochen.mianshiya.job.once;
 
-import com.xiaochen.mianshiya.esdao.PostEsDao;
+//import com.xiaochen.mianshiya.esdao.PostEsDao;
 import com.xiaochen.mianshiya.model.dto.post.PostEsDTO;
 import com.xiaochen.mianshiya.model.entity.Post;
 import com.xiaochen.mianshiya.service.PostService;
@@ -26,7 +26,7 @@ public class FullSyncPostToEs implements CommandLineRunner {
     private PostService postService;
 
     @Resource
-    private PostEsDao postEsDao;
+//    private PostEsDao postEsDao;
 
     @Override
     public void run(String... args) {
@@ -41,7 +41,7 @@ public class FullSyncPostToEs implements CommandLineRunner {
         for (int i = 0; i < total; i += pageSize) {
             int end = Math.min(i + pageSize, total);
             log.info("sync from {} to {}", i, end);
-            postEsDao.saveAll(postEsDTOList.subList(i, end));
+//            postEsDao.saveAll(postEsDTOList.subList(i, end));
         }
         log.info("FullSyncPostToEs end, total {}", total);
     }

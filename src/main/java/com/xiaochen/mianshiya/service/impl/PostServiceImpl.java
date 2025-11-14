@@ -65,8 +65,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Resource
     private PostFavourMapper postFavourMapper;
 
-    @Resource
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
+//    @Resource
+//    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Override
     public void validPost(Post post, boolean add) {
@@ -199,31 +199,32 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 构造查询
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
                 .withPageable(pageRequest).withSorts(sortBuilder).build();
-        SearchHits<PostEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, PostEsDTO.class);
-        Page<Post> page = new Page<>();
-        page.setTotal(searchHits.getTotalHits());
-        List<Post> resourceList = new ArrayList<>();
-        // 查出结果后，从 db 获取最新动态数据（比如点赞数）
-        if (searchHits.hasSearchHits()) {
-            List<SearchHit<PostEsDTO>> searchHitList = searchHits.getSearchHits();
-            List<Long> postIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
-                    .collect(Collectors.toList());
-            List<Post> postList = baseMapper.selectBatchIds(postIdList);
-            if (postList != null) {
-                Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
-                postIdList.forEach(postId -> {
-                    if (idPostMap.containsKey(postId)) {
-                        resourceList.add(idPostMap.get(postId).get(0));
-                    } else {
-                        // 从 es 清空 db 已物理删除的数据
-                        String delete = elasticsearchRestTemplate.delete(String.valueOf(postId), PostEsDTO.class);
-                        log.info("delete post {}", delete);
-                    }
-                });
-            }
-        }
-        page.setRecords(resourceList);
-        return page;
+//        SearchHits<PostEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, PostEsDTO.class);
+//        Page<Post> page = new Page<>();
+//        page.setTotal(searchHits.getTotalHits());
+//        List<Post> resourceList = new ArrayList<>();
+//        // 查出结果后，从 db 获取最新动态数据（比如点赞数）
+//        if (searchHits.hasSearchHits()) {
+//            List<SearchHit<PostEsDTO>> searchHitList = searchHits.getSearchHits();
+//            List<Long> postIdList = searchHitList.stream().map(searchHit -> searchHit.getContent().getId())
+//                    .collect(Collectors.toList());
+//            List<Post> postList = baseMapper.selectBatchIds(postIdList);
+//            if (postList != null) {
+//                Map<Long, List<Post>> idPostMap = postList.stream().collect(Collectors.groupingBy(Post::getId));
+//                postIdList.forEach(postId -> {
+//                    if (idPostMap.containsKey(postId)) {
+//                        resourceList.add(idPostMap.get(postId).get(0));
+//                    } else {
+//                        // 从 es 清空 db 已物理删除的数据
+//                        String delete = elasticsearchRestTemplate.delete(String.valueOf(postId), PostEsDTO.class);
+//                        log.info("delete post {}", delete);
+//                    }
+//                });
+//            }
+//        }
+//        page.setRecords(resourceList);
+//        return page;
+        return null;
     }
 
     @Override

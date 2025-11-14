@@ -1,11 +1,13 @@
 package com.xiaochen.mianshiya.job.cycle;
 
-import com.xiaochen.mianshiya.esdao.PostEsDao;
+import com.xiaochen.mianshiya.annotation.DistributedLock;
+//import com.xiaochen.mianshiya.esdao.PostEsDao;
 import com.xiaochen.mianshiya.mapper.PostMapper;
 import com.xiaochen.mianshiya.model.dto.post.PostEsDTO;
 import com.xiaochen.mianshiya.model.entity.Post;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +29,12 @@ public class IncSyncPostToEs {
     private PostMapper postMapper;
 
     @Resource
-    private PostEsDao postEsDao;
+//    private PostEsDao postEsDao;
 
     /**
      * 每分钟执行一次
      */
+
     @Scheduled(fixedRate = 60 * 1000)
     public void run() {
         // 查询近 5 分钟内的数据
@@ -50,7 +53,7 @@ public class IncSyncPostToEs {
         for (int i = 0; i < total; i += pageSize) {
             int end = Math.min(i + pageSize, total);
             log.info("sync from {} to {}", i, end);
-            postEsDao.saveAll(postEsDTOList.subList(i, end));
+//            postEsDao.saveAll(postEsDTOList.subList(i, end));
         }
         log.info("IncSyncPostToEs end, total {}", total);
     }
