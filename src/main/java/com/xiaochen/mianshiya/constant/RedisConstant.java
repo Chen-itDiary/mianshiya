@@ -5,6 +5,10 @@ public interface RedisConstant {
      * Redis 常量
      */
 
+    String key = "Sa-token:kicked:";
+
+    String conflictedKey = "Sa-token:conflicted:";
+
     String USER_SIGN_IN_REDIS_KEY_PREFIX = "user:signins";
 
     /**
