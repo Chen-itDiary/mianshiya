@@ -94,7 +94,12 @@
             <artifactId>sa-token-redis-jackson</artifactId>
             <version>1.39.0</version>
         </dependency>
-
+        <!-- 火山引擎 Ai https://console.volcengine.com/ark/region:ark+cn-beijing/experience/chat?csid=excs-202511211431-%5BvKRikvsFTy7845KgkN6Vd%5D&modelId=deepseek-v3-250324&tab=Chat -->
+        <dependency>
+            <groupId>com.volcengine</groupId>
+            <artifactId>volcengine-java-sdk-ark-runtime</artifactId>
+            <version>0.2.47</version>
+        </dependency>
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
@@ -175,6 +180,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- 手动补充 JUnit Platform 启动器（解决 TestIdentifier 缺失，关键） -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.9.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

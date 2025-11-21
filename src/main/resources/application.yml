@@ -163,6 +163,7 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+  # 开启：让自定义拦截器在注解鉴权之前执行（默认是 false，注解优先）
 
 # 微信相关
 wx:
@@ -204,3 +205,6 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.xiaochen.mianshiya.controller
+# 填写自己的ai key，目前使用的是火山引擎
+ai:
+  apikey:

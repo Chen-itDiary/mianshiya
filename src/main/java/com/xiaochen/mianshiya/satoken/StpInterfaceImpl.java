@@ -3,6 +3,7 @@ package com.xiaochen.mianshiya.satoken;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpUtil;
 import com.xiaochen.mianshiya.common.ErrorCode;
+import com.xiaochen.mianshiya.exception.BusinessException;
 import com.xiaochen.mianshiya.exception.ThrowUtils;
 import com.xiaochen.mianshiya.model.entity.User;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,9 @@ public class StpInterfaceImpl implements StpInterface {
         // 从当前登录用户信息中获取角色
         User user = (User) StpUtil.getSessionByLoginId(loginId).get(USER_LOGIN_STATE);
         ThrowUtils.throwIf(user == null, ErrorCode.NOT_LOGIN_ERROR);
+        if ("Ban".equals(user.getUserRole())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您已被封");
+        }
         return Collections.singletonList(user.getUserRole());
     }
 }

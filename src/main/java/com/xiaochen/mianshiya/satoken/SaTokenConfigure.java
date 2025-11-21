@@ -1,5 +1,8 @@
 package com.xiaochen.mianshiya.satoken;
 
+import cn.dev33.satoken.SaManager;
+import cn.dev33.satoken.config.SaTokenConfig;
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
@@ -11,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.xiaochen.mianshiya.constant.UserConstant.USER_LOGIN_STATE;
@@ -20,7 +24,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
     @Autowired
     private TellKicked tellKicked;
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 //         注册 Sa-Token 拦截器，打开注解式鉴权功能
@@ -29,7 +32,12 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                            .check(r -> tellKicked.isConflicted());
             SaRouter.match("/**")
                         .check(r -> {
-                            User user = (User) StpUtil.getSession().get(USER_LOGIN_STATE);
+                            User user;
+                            try {
+                                user = (User) StpUtil.getSession().get(USER_LOGIN_STATE);
+                            }catch (NotLoginException exception){
+                                return;
+                            }
                             if ("Ban".equals(user.getUserRole()))
                                 throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "您已被封");
 //                            .check(r -> StpUtil.checkLogin());

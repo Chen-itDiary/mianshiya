@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xiaochen.mianshiya.common.BaseResponse;
 import com.xiaochen.mianshiya.model.dto.question.QuestionQueryRequest;
 import com.xiaochen.mianshiya.model.entity.Question;
+import com.xiaochen.mianshiya.model.entity.User;
 import com.xiaochen.mianshiya.model.vo.QuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,4 +77,13 @@ public interface QuestionService extends IService<Question> {
      * @param questionList
      */
     void batchDeleteQuestions(List<Long> questionList);
+
+    /**
+     * Ai 生成题目
+     * @param questionType
+     * @param number
+     * @param user
+     * @return true/false
+     */
+    public Boolean aiGenerateQuestions(String questionType, int number, User user);
 }

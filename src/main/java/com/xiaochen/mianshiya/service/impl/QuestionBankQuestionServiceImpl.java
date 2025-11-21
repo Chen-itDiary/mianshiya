@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xiaochen.mianshiya.ThreadPool.DatabaseThreadPool;
 import com.xiaochen.mianshiya.common.ErrorCode;
 import com.xiaochen.mianshiya.constant.CommonConstant;
 import com.xiaochen.mianshiya.exception.BusinessException;
@@ -208,15 +209,7 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
         List<QuestionBankQuestion> existQuestionList = this.list(lambdaQueryWrapper);
         validQuestionIdList.removeAll(existQuestionList.stream().map(QuestionBankQuestion::getQuestionId).collect(Collectors.toList()));
         ThrowUtils.throwIf(CollUtil.isEmpty(validQuestionIdList), ErrorCode.NOT_FOUND_ERROR, "所有题目均已加入题库");
-        // 自定义一个线程池
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                20,  //核心线程数
-                50,             //最大线程数
-                60L,            //线程空闲时间
-                TimeUnit.SECONDS,   //存活时间单位
-                new LinkedBlockingQueue<>(10000),   //阻塞容量
-                new ThreadPoolExecutor.CallerRunsPolicy()   //拒绝策略，由调用线程处理任务
-        );
+
         // 存储任务的队列
         List<CompletableFuture<Void>> list = new ArrayList<>();
         // 执行插入（分批次插入数据---事务）
@@ -248,7 +241,7 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
             //异步处理数据
             CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
                 questionBankQuestionService.batchAddQuestionsToBankInner(questionBankQuestions);
-            }, threadPoolExecutor).exceptionally(ex ->{
+            }, DatabaseThreadPool.threadPoolExecutor).exceptionally(ex ->{
                 log.error("批处理失败", ex);
                 return null;
             });
@@ -310,15 +303,7 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
                 .select(QuestionBankQuestion::getQuestionId);
         List<Long> existQuestionList = this.listObjs(lambdaQueryWrapper, object -> (Long)object);
         ThrowUtils.throwIf(CollUtil.isEmpty(existQuestionList), ErrorCode.NOT_FOUND_ERROR, "所有题目不在题库");
-        // 自定义一个线程池
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                20,  //核心线程数
-                50,             //最大线程数
-                60L,            //线程空闲时间
-                TimeUnit.SECONDS,   //存活时间单位
-                new LinkedBlockingQueue<>(10000),   //阻塞容量
-                new ThreadPoolExecutor.CallerRunsPolicy()   //拒绝策略，由调用线程处理任务
-        );
+
         // 存储任务的队列
         List<CompletableFuture<Void>> list = new ArrayList<>();
         // 执行删除（分批次插入数据---事务）
@@ -333,7 +318,7 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
             CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
                 Integer count = questionBankQuestionService.batchRemoveQuestionsToBankInner(subList, questionBankId);
                 successDelet.addAndGet(count); // 读取、计算、写入三步合一，保证多线程下的安全
-            }, threadPoolExecutor).exceptionally(ex ->{
+            }, DatabaseThreadPool.threadPoolExecutor).exceptionally(ex ->{
                 log.error("批处理失败", ex);
                 return null;
             });
